@@ -1,4 +1,4 @@
-<mvc:View controllerName="rrhh.controller.CreateEmployee"
+<mvc:View controllerName="rrhh.controller.ShowEmployee"
           xmlns:mvc="sap.ui.core.mvc" 
           displayBlock="true"
           xmlns="sap.m">
