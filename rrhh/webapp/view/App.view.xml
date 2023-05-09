@@ -1,0 +1,48 @@
+<mvc:View controllerName="rrhh.controller.App"
+          xmlns:mvc="sap.ui.core.mvc" 
+          displayBlock="true"
+          xmlns="sap.m">
+    <Shell id="menuShell">
+        <App id="app">
+            <pages>
+                <Page id="menuPage" 
+                    title="{i18n>mainMenu}">
+                    <content>
+                        <Panel id="employeesPanelMenu"
+                               headerText="{i18n>employees}" 
+                               expandable="true" 
+                               expanded="true">
+                            <GenericTile id="tileCreateEmployee"
+                                         headerImage="sap-icon://add-employee" 
+                                         class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
+                                         press="onCreateEmployee">
+                                <TileContent id="contentTileCreateEmployee"
+                                             footer="{i18n>createEmployee}"/>
+                            </GenericTile>
+                            <GenericTile id="tileShowEmployee"
+                                         headerImage="sap-icon://employee-lookup" 
+                                         class="sapUiTinyMarginBegin sapUiTinyMarginTop"
+                                         press="onShowEmployee">
+                                <TileContent id="contentTileShowEmployee"
+                                             footer="{i18n>showEmployee}"/>
+                            </GenericTile>
+                        </Panel>
+                        <Panel id="ordersPanelMenu"
+                               headerText="{i18n>orders}"  
+                               expandable="true" 
+                               expanded="true">
+                            <GenericTile id="tileSignOrder"  
+                                         headerImage="sap-icon://signature" 
+                                         class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
+                                         url="https://61c38317trial-dev-logali-approuter.cfapps.us10.hana.ondemand.com/logaligroupEmployees/index.html">
+                                <TileContent id="contentTileSignOrder"
+                                             footer="{i18n>signOrder}">
+                                </TileContent>
+                            </GenericTile>
+                        </Panel>
+                    </content>
+                </Page>
+            </pages>
+        </App>
+    </Shell>
+</mvc:View>
