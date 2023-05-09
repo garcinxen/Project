@@ -1,133 +1,150 @@
-<mvc:View controllerName="rrhh.controller.CreateEmployee"
+<mvc:View xmlns:footerbar="sap.ushell.ui.footerbar" controllerName="rrhh.controller.CreateEmployee"
           xmlns:mvc="sap.ui.core.mvc" 
           displayBlock="true"
           xmlns="sap.m"
+          xmlns:core="sap.ui.core"
           xmlns:upload="sap.m.upload"
           xmlns:form="sap.ui.layout.form">
-    <Page id="createEmployeePage" 
-          title="{i18n>createEmployee}">
-        <content>
-            <Wizard id="wizardCreateEmployee">
-                <WizardStep id="stepTypeEmployee" 
-                            title="{i18n>typeEmployee}"
-							validated="false">
-                    <MessageStrip id="stepOneMsg"
-                                  class="sapUiSmallMarginBottom"
-								  text="{i18n>stepOneMsg}"
-                                  showIcon="true"/>
-                    <FlexBox id="flexBoxstepOneBtns"
-                             alignItems="Center" 
-                             justifyContent="Center">
-                        <Button id="internBtn"
-                                class="sapUiSmallMarginEnd"
-                                text="{i18n>internBtn}" 
-                                press="onGoToStepTwo"/>
-                        <Button id="autonomousBtn"
-                                class="sapUiSmallMarginEnd"
-                                text="{i18n>autonomousBtn}"
-                                press="onGoToStepTwo"/>
-                        <Button id="managerBtn"
-                                text="{i18n>managerBtn}" 
-                                press="onGoToStepTwo"/>
-                    </FlexBox>
-                </WizardStep>
-                <WizardStep id="stepDataEmployee" 
-                            title="{i18n>dataEmployee}"
-							validated="false">
-                    <MessageStrip id="stepTwoMsg"
-                                  class="sapUiSmallMarginBottom"
-								  text="{i18n>stepTwoMsg}"
-								  showIcon="true"/>
-                    <form:SimpleForm id="dataEmployeeForm">
-                        <Label id="labelNameEmployee"
-                               text="{i18n>name}"/>
-                        <Input id="inputNameEmployee"
-                               editable="true"
-                               required="true"
-                               change="validateData"
-                               value="{/_Name}"
-                               valueState="{/_NameState}"/>
-                        <Label id="labelLastNameEmployee"
-                               text="{i18n>lastName}"/>
-                        <Input id="inputLastNameEmployee"
-                               editable="true"
-                               required="true"
-                               change="validateData"
-                               value="{/_LastName}"
-                               valueState="{/_LastNameState}"/>
-                        <Label id="labelDNIEmployee"
-                               text="{i18n>DNI}"
-                               visible="{= ${/_Type} !== '1'}"/>
-                        <Input id="inputDNIEmployee"
-                               editable="true"
-                               required="true"
-                               change="validateDNI"
-                               visible="{= ${/_Type} !== '1'}"
-                               value="{/_DNI}"
-                               valueState="{/_DNIState}"/>
-                        <Label id="labelCIFEmployee"
-                               text="{i18n>CIF}"
-                               visible="{= ${/_Type} === '1'}"/>
-                        <Input id="inputCIFEmployee"
-                               editable="true"
-                               required="true"
-                               change="validateData"
-                               visible="{= ${/_Type} === '1'}"
-                               value="{/_CIF}"
-                               valueState="{/_CIFState}"/>
-                        <Label id="labelSalaryEmployee"
-                               text="{= ${/_Type} === '1' ? ${i18n>dailyPrice} : ${i18n>annualSalary}}"/>
-                        <Slider id="salarySlider"
-                                value="{/_Salary}"                        
-                                width="100%"                                
-                                class="sapUiSmallMarginBottom"
-                                enableTickmarks="true"
-                                change="validateData"/>
-                        <Label id="labelDateEmployee"
-                               text="{i18n>dateEmployee}"/>
-                        <DatePicker id="datePickerEmployee" 
-                                    dateValue="{/_IncorporationDate}" 
-                                    valueState="{/_IncorporationDateState}" 
-                                    change="validateData"/>
-                    </form:SimpleForm>
-                </WizardStep>
-                <WizardStep id="stepAdditionalInfoEmployee" 
-                            title="{i18n>additionalInfoEmployee}"
-							validated="true">
-                    <MessageStrip id="stepThreeMsg"
-                                  class="sapUiSmallMarginBottom"
-								  text="{i18n>stepThreeMsg}"
-								  showIcon="true"/>
-                    <Label id="labelComments" 
-                           text="{i18n>comments}" 
-                           width="100%"/>
-                    <TextArea id="areaComments" 
-                              value="{/_Comments}" 
-                              width="100%"/>
-                    <upload:UploadSet id="UploadSet"
-                                      maxFileNameLength="55"
-                                      maxFileSize="10"
-                                      multiple="true"
-                                      uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
-                                      sameFilenameAllowed="true"
-                                      instantUpload="false"
-                                      beforeUploadStarts="onBeforeUploadStart"
-                                      noDataDescription="{i18n>dragFiles}" />
-                </WizardStep>
-            </Wizard>
-            <Button id="nextStepBtn"
-                    text="{i18n>thirdStep}" 
-                    press="onGoToStepThree"
-                    visible="false"
-                    enabled="false"/>
-        </content>
-        <footer>
-            <Toolbar id="footerToolbarCreateEmployee">
-                <ToolbarSpacer id="footerToolbarSpacerCreateEmployee"/>
-                <Button id="footerBtnCancelCreateEmployee"
-                        text="{i18n>cancel}" 
-                        press="onCancelCreateEmployee"/>
-            </Toolbar>
-        </footer>
-    </Page>
+       <Page id="createEmplyeePage"
+             title="{i18n>createEmployee}">
+              <content>
+                     <NavContainer id="navContainerCreateEmployee">
+                            <pages>
+                                   <Page id="wizardPage" 
+                                         showHeader="false">
+                                          <content>
+                                                 <Wizard id="wizardCreateEmployee"
+                                                         complete="onCompleteWizard">
+                                                        <WizardStep id="stepTypeEmployee" 
+                                                                    title="{i18n>typeEmployee}"
+                                                                    validated="false">
+                                                        <MessageStrip id="stepOneMsg"
+                                                                      class="sapUiSmallMarginBottom"
+                                                                      text="{i18n>stepOneMsg}"
+                                                                      showIcon="true"/>
+                                                        <HBox id="flexBoxstepOneBtns"
+                                                              alignItems="Center" 
+                                                              justifyContent="Center">
+                                                               <Button id="internBtn"
+                                                                       class="sapUiSmallMarginEnd"
+                                                                       text="{i18n>internBtn}" 
+                                                                       press="onGoToStepTwo"/>
+                                                               <Button id="autonomousBtn"
+                                                                       class="sapUiSmallMarginEnd"
+                                                                       text="{i18n>autonomousBtn}"
+                                                                       press="onGoToStepTwo"/>
+                                                               <Button id="managerBtn"
+                                                                       text="{i18n>managerBtn}" 
+                                                                       press="onGoToStepTwo"/>
+                                                        </HBox>
+                                                        </WizardStep>
+                                                        <WizardStep id="stepDataEmployee" 
+                                                                    title="{i18n>dataEmployee}"
+                                                                    validated="false">
+                                                        <MessageStrip id="stepTwoMsg"
+                                                                      class="sapUiSmallMarginBottom"
+                                                                      text="{i18n>stepTwoMsg}"
+                                                                      showIcon="true"/>
+                                                        <form:SimpleForm id="dataEmployeeForm">
+                                                               <Label id="labelNameEmployee"
+                                                                      text="{i18n>name}"/>
+                                                               <Input id="inputNameEmployee"
+                                                                      editable="true"
+                                                                      required="true"
+                                                                      change="validateData"
+                                                                      value="{/_Name}"
+                                                                      valueState="{/_NameState}"/>
+                                                               <Label id="labelLastNameEmployee"
+                                                                      text="{i18n>lastName}"/>
+                                                               <Input id="inputLastNameEmployee"
+                                                                      editable="true"
+                                                                      required="true"
+                                                                      change="validateData"
+                                                                      value="{/_LastName}"
+                                                                      valueState="{/_LastNameState}"/>
+                                                               <Label id="labelDNICIFEmployee"
+                                                                      text="{= ${/_Type} === '1' ? ${i18n>CIF} : ${i18n>DNI}}"/>
+                                                               <Input id="inputDNICIFEmployee"
+                                                                      editable="true"
+                                                                      required="true"
+                                                                      change="validateDNI"
+                                                                      value="{/_DNICIF}"
+                                                                      valueState="{/_DNICIFState}"/>                                          
+                                                               <Label id="labelSalaryEmployee"
+                                                                      text="{= ${/_Type} === '1' ? ${i18n>dailyPrice} : ${i18n>annualSalary}}"/>
+                                                               <Slider id="salarySlider"
+                                                                       value="{/_Salary}"                        
+                                                                       width="100%"                                
+                                                                       class="sapUiSmallMarginBottom"
+                                                                       enableTickmarks="true"
+                                                                       change="validateData"/>
+                                                               <Label id="labelDateEmployee"
+                                                                      text="{i18n>dateEmployee}"/>
+                                                               <DatePicker id="datePickerEmployee" 
+                                                                           dateValue="{/_IncorporationDate}" 
+                                                                           valueState="{/_IncorporationDateState}" 
+                                                                           change="validateData"/>
+                                                        </form:SimpleForm>
+                                                        </WizardStep>
+                                                        <WizardStep id="stepAdditionalInfoEmployee" 
+                                                                    title="{i18n>additionalInfoEmployee}"
+                                                                    validated="true">
+                                                        <MessageStrip id="stepThreeMsg"
+                                                                      class="sapUiSmallMarginBottom"
+                                                                      text="{i18n>stepThreeMsg}"
+                                                                      showIcon="true"/>
+                                                        <Label id="labelComments" 
+                                                               text="{i18n>comments}" 
+                                                               width="100%"/>
+                                                        <TextArea id="areaComments" 
+                                                                  value="{/_Comments}" 
+                                                                  width="100%"/>
+                                                        <upload:UploadSet id="uploadSet"
+                                                                          maxFileNameLength="55"
+                                                                          maxFileSize="10"
+                                                                          multiple="true"
+                                                                          uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
+                                                                          sameFilenameAllowed="true"
+                                                                          instantUpload="true"
+                                                                          beforeUploadStarts="onBeforeUploadStart"
+                                                                          noDataDescription="{i18n>dragFiles}" />
+                                                        </WizardStep>
+                                                 </Wizard>
+                                                 <Button id="nextStepBtn"
+                                                         text="{i18n>thirdStep}" 
+                                                         press="onGoToStepThree"
+                                                         visible="false"
+                                                         enabled="false"/>
+                                          </content>
+                                          <footer>
+                                                 <OverflowToolbar id="footerToolbarCreateEmployee">
+                                                        <ToolbarSpacer id="footerToolbarSpacerCreateEmployee"/>
+                                                        <Button id="footerBtnCancelCreateEmployee"
+                                                                text="{i18n>cancel}" 
+                                                                press="onCancelCreateEmployee"/>
+                                                 </OverflowToolbar>
+                                          </footer>
+                                   </Page>
+                                   <Page id="reviewDataPage"
+                                         title="{i18n>summary}">
+                                          <content>
+                                                 <core:Fragment fragmentName="rrhh.fragment.ReviewData" 
+                                                                type="XML"/>
+                                          </content>
+                                          <footer>
+                                                 <Toolbar id="footerToolbarReviewData">
+                                                        <ToolbarSpacer id="footerToolbarSpacerReviewData"/>
+                                                        <Button id="footerReviewBtnSave"
+                                                                text="{i18n>save}" 
+                                                                press="onSaveEmployee"/>
+                                                        <Button id="footerReviewBtnCancel"
+                                                                text="{i18n>cancel}" 
+                                                                press="onCancelCreateEmployee"/>
+                                                 </Toolbar>
+                                          </footer>
+                                   </Page>
+                            </pages>
+                     </NavContainer>
+              </content>
+       </Page>
 </mvc:View>

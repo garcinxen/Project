@@ -33,6 +33,19 @@ sap.ui.define([
             MessageBox.confirm(oResourceBundle.getText("confirmCancel"),{
                 onClose : function (oAction) {
                     if (oAction === "OK") {
+                        //return to wizard page in case to cancel in review page
+                        this.byId("navContainerCreateEmployee").backToPage(this.byId("wizardPage"))
+                        //clean the wizard and the model
+                        let firstStep = this._wizard.getSteps()[0];
+                        this._wizard.discardProgress(firstStep);
+                        this._wizard.goToStep(firstStep);
+                        firstStep.setValidated(false);
+                        this._model.setData({
+                            _NumFiles: 0,
+                            EmployeeID: "",
+                            Files: []
+                        });
+
                         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                         oRouter.navTo("RouteApp",{});
                     };
@@ -111,13 +124,11 @@ sap.ui.define([
                 employeeData._LastNameState = "None";
             };
 
-            if (employeeData._Type === "1") { 
-                if (!employeeData._CIF) {
-                    error = true;
-                    employeeData._CIFState = "Error";
-                } else { 
-                    employeeData._CIFState = "None";
-                };
+            if (!employeeData._DNICIF) { 
+                error = true;
+                employeeData._DNICIFState = "Error";
+            } else { 
+                employeeData._DNICIFState = "None";
             };
 
             if (!employeeData._IncorporationDate) {
@@ -139,26 +150,28 @@ sap.ui.define([
         };
 
         function validateDNI (oEvent) {
-            let employeeDNI = oEvent.getParameter("value");
-            let number, letter, letterList;
-            let regularExp = /^\d{8}[a-zA-Z]$/;
+            if (this._model.getData()._Type !== "1") {
+                let employeeDNI = oEvent.getParameter("value");
+                let number, letter, letterList;
+                let regularExp = /^\d{8}[a-zA-Z]$/;
 
-            if (regularExp.test (employeeDNI) === true) {
-                number = employeeDNI.substr(0,employeeDNI.length-1);
-                letter = employeeDNI.substr(employeeDNI.length-1,1);
-                number = number % 23;
-                letterList="TRWAGMYFPDXBNJZSQVHLCKET";
-                letterList=letterList.substring(number,number+1);
+                if (regularExp.test (employeeDNI) === true) {
+                    number = employeeDNI.substr(0,employeeDNI.length-1);
+                    letter = employeeDNI.substr(employeeDNI.length-1,1);
+                    number = number % 23;
+                    letterList="TRWAGMYFPDXBNJZSQVHLCKET";
+                    letterList=letterList.substring(number,number+1);
 
-                if (letterList !== letter.toUpperCase()) {
-                    this._model.setProperty("/_DNIState","Error");
-                } else {
-                    this._model.setProperty("/_DNIState","None");
+                    if (letterList !== letter.toUpperCase()) {
+                        this._model.setProperty("/_DNICIFState","Error");
+                    } else {
+                        this._model.setProperty("/_DNICIFState","None");
+                    };
+
+                }else{
+                    this._model.setProperty("/_DNICIFState","Error");
                 };
-
-            }else{
-                this._model.setProperty("/_DNIState","Error");
-            };
+            }
         };
 
         function onGoToStepThree(oEvent){
@@ -172,6 +185,53 @@ sap.ui.define([
             };
         };
 
+        function onSaveEmployee () {
+
+        };
+
+        function onCompleteWizard () {
+            this.byId("navContainerCreateEmployee").to(this.byId("reviewDataPage"));
+            let uploadSet = this.byId("uploadSet");
+            let files = uploadSet.getItems();
+			let numFiles = uploadSet.getItems().length;
+            let filesArray;
+
+            this._model.setProperty("/_NumFiles", numFiles);
+
+            if (numFiles > 0) {
+                for(let i in files){
+                    filesArray.push({
+                        DocName: files[i].getFileName(),
+                        MimeType: files[i].getMimeType()
+                    });	
+                };
+
+                this._model.setProperty("/_files", filesArray);
+            } else {
+                this._model.setProperty("/_Files", []);
+            };
+        };
+
+        function onBeforeUploadStart (oEvent) {
+            let oUploadSet = oEvent.getSource();
+            let fileName = oEvent.getParameter("item").getFileName();
+
+            //SLUG
+            let oCustomerHeaderSlug = new sap.ui.core.Item({
+                key: "Slug",
+                text: this.getOwnerComponent().SapId + ";" + this._model.getData().EmployeeID + ";" + fileName
+            });
+
+            //CSRF token
+            let oCustomerHeaderToken = new sap.ui.core.Item({
+                key: "X-CSRF-Token",
+                text: this.getView().getModel("odataModel").getSecurityToken()
+            });
+
+            oUploadSet.addHeaderField(oCustomerHeaderToken); 
+            oUploadSet.addHeaderField(oCustomerHeaderSlug);     
+        };
+
         let CreateEmployee = Controller.extend("rrhh.controller.CreateEmployee", {});
 
         CreateEmployee.prototype.onBeforeRendering = onBeforeRendering;
@@ -181,6 +241,9 @@ sap.ui.define([
         CreateEmployee.prototype.validateData = validateData;
         CreateEmployee.prototype.validateDNI = validateDNI;
         CreateEmployee.prototype.onGoToStepThree = onGoToStepThree;
+        CreateEmployee.prototype.onSaveEmployee = onSaveEmployee;
+        CreateEmployee.prototype.onCompleteWizard = onCompleteWizard;
+        CreateEmployee.prototype.onBeforeUploadStart = onBeforeUploadStart;
 
         return CreateEmployee;        
     });

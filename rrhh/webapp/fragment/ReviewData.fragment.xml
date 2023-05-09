@@ -1,0 +1,92 @@
+<core:FragmentDefinition xmlns:core ="sap.ui.core"
+                         xmlns="sap.m"
+                         xmlns:form="sap.ui.layout.form"    >
+    <Panel id="panelStepOne">
+        <form:SimpleForm id="formStepOne"
+                         title="1. {i18n>typeEmployee}"
+                         width="100%"
+                         editable="false"
+                         layout="ResponsiveGridLayout">
+            <form:content>
+                <Label id="labelTypeReview"
+                       text="{i18n>type}"/>
+                <Text id="textStepOneReview"
+                      text="{=${/_Type} === '0' ? ${i18n>internBtn} : ${/_Type} === '1' ? ${i18n>autonomousBtn} : ${/_Type} === '2' ? ${i18n>managerBtn} : ''}"/>
+                <Button id="btnEditStepOneReview"
+                        icon="sap-icon://edit"
+                        text="{i18n>edit}"
+                        type="Transparent"
+                        press="editStepOne"
+                        width="20%"/>
+            </form:content>
+        </form:SimpleForm>
+    </Panel>
+    <Panel id="panelStepTwo">
+        <form:SimpleForm id="formStepTwo"
+                         title="2. {i18n>dataEmployee}"
+                         width="100%"
+                         editable="false"
+                         layout="ResponsiveGridLayout">
+            <form:content>
+                <Label id="labelNameReview"
+                       text="{i18n>name}"/>
+                <Text id="textNameReview"
+                      text="{/_Name}"/>
+                <Label id="labelLastNameReview"
+                       text="{i18n>lastName}"/>
+                <Text id="textLastNameReview"
+                      text="{/_LastName}"/>
+                <Label id="labelDNICIFReview"
+                       text="{= ${/_Type} === '1' ? ${i18n>CIF} : ${i18n>DNI}}"/>
+                <Text id="textDNICIFReview" 
+                      text="{/_DNICIF}"/>
+                <Label id="labelSalaryReview"
+                       text="{= ${/_Type} === '1' ? ${i18n>dailyPrice} : ${i18n>annualSalary}}"/>
+                <Text id="textSalaryReview"
+                      text="{/_Salary}"/>
+                <Label id="labelDateReview"
+                       text="{i18n>dateEmployee}"/>
+                <Text id="textDateReview"
+                      text="{path:'/_IncorporationDate',type:'sap.ui.model.type.Date'}"/>
+                <Button id="btnEditStepTwoReview"
+                        icon="sap-icon://edit"
+                        text="{i18n>edit}"
+                        type="Transparent"
+                        press="editStepTwo"
+                        width="20%"/>
+            </form:content>
+        </form:SimpleForm>
+    </Panel>
+    <Panel id="panelStepThree">
+        <form:SimpleForm id="formStepThree"
+                         title="3. {i18n>additionalInfoEmployee}"
+                         width="100%"
+                         editable="false"
+                         layout="ResponsiveGridLayout">
+            <form:content>
+                <Label id="labelCommentReview"
+                       text="{i18n>comments}"/>
+                <Text id="textCommentsReview"
+                      text="{/_Comments}"/>
+                <Label id="labelDocumentsReview" 
+                       text="{i18n>documents}"/>
+                <Text id="textDocumentsReview" 
+                      text="{/_NumFiles} {i18n>files}"/>
+                <Label id="dummyLabel"/>
+                <List id="listDocumentsReview" 
+                      items="{/_Files}">
+                    <items>
+                        <StandardListItem id="listItemReview"
+                                          title="{DocName}"/>
+                    </items>
+                </List>
+                <Button id="btnEditStepThreeReview"
+                        icon="sap-icon://edit"
+                        text="{i18n>edit}"
+                        type="Transparent"
+                        press="editStepThree"
+                        width="20%"/>
+            </form:content>
+        </form:SimpleForm>
+    </Panel>                        
+</core:FragmentDefinition>    
