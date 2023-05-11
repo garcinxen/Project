@@ -25,17 +25,20 @@
                                                         <HBox id="flexBoxstepOneBtns"
                                                               alignItems="Center" 
                                                               justifyContent="Center">
-                                                               <Button id="internBtn"
-                                                                       class="sapUiSmallMarginEnd"
-                                                                       text="{i18n>internBtn}" 
-                                                                       press="onGoToStepTwo"/>
-                                                               <Button id="autonomousBtn"
-                                                                       class="sapUiSmallMarginEnd"
-                                                                       text="{i18n>autonomousBtn}"
-                                                                       press="onGoToStepTwo"/>
-                                                               <Button id="managerBtn"
-                                                                       text="{i18n>managerBtn}" 
-                                                                       press="onGoToStepTwo"/>
+                                                               <ToggleButton id="internBtn"
+                                                                             class="sapUiSmallMarginEnd"
+                                                                             text="{i18n>internBtn}" 
+                                                                             press="onGoToStepTwo"
+                                                                             pressed="false"/>
+                                                               <ToggleButton id="autonomousBtn"
+                                                                             class="sapUiSmallMarginEnd"
+                                                                             text="{i18n>autonomousBtn}"
+                                                                             press="onGoToStepTwo"
+                                                                             pressed="false"/>
+                                                               <ToggleButton id="managerBtn"
+                                                                             text="{i18n>managerBtn}" 
+                                                                             press="onGoToStepTwo"
+                                                                             pressed="false"/>
                                                         </HBox>
                                                         </WizardStep>
                                                         <WizardStep id="stepDataEmployee" 
@@ -67,7 +70,7 @@
                                                                <Input id="inputDNICIFEmployee"
                                                                       editable="true"
                                                                       required="true"
-                                                                      change="validateDNI"
+                                                                      change="validateData"
                                                                       value="{/_DNICIF}"
                                                                       valueState="{/_DNICIFState}"/>                                          
                                                                <Label id="labelSalaryEmployee"
@@ -88,7 +91,7 @@
                                                         </WizardStep>
                                                         <WizardStep id="stepAdditionalInfoEmployee" 
                                                                     title="{i18n>additionalInfoEmployee}"
-                                                                    validated="true">
+                                                                    validated="false">
                                                         <MessageStrip id="stepThreeMsg"
                                                                       class="sapUiSmallMarginBottom"
                                                                       text="{i18n>stepThreeMsg}"
@@ -105,16 +108,12 @@
                                                                           multiple="true"
                                                                           uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
                                                                           sameFilenameAllowed="true"
-                                                                          instantUpload="true"
+                                                                          instantUpload="false"
                                                                           beforeUploadStarts="onBeforeUploadStart"
-                                                                          noDataDescription="{i18n>dragFiles}" />
+                                                                          noDataDescription="{i18n>dragFiles}"
+                                                                          uploadCompleted="onUploadCompleted"/>
                                                         </WizardStep>
-                                                 </Wizard>
-                                                 <Button id="nextStepBtn"
-                                                         text="{i18n>thirdStep}" 
-                                                         press="onGoToStepThree"
-                                                         visible="false"
-                                                         enabled="false"/>
+                                                 </Wizard>                                                 
                                           </content>
                                           <footer>
                                                  <OverflowToolbar id="footerToolbarCreateEmployee">

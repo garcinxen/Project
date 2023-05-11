@@ -11,12 +11,10 @@ sap.ui.define([
     function (Controller, MessageBox, JSONModel) {
         "use strict";
 
-        function onInit() {
-        };
-
         //Function to refresh the wizard and set it in the first step.
         function onBeforeRendering(){
             this._wizard = this.byId("wizardCreateEmployee");
+            this._navContainer = this.byId("navContainerCreateEmployee");
 
             let firstStep = this._wizard.getSteps()[0];
             this._wizard.discardProgress(firstStep);
@@ -34,19 +32,10 @@ sap.ui.define([
                 onClose : function (oAction) {
                     if (oAction === "OK") {
                         //return to wizard page in case to cancel in review page
-                        this.byId("navContainerCreateEmployee").backToPage(this.byId("wizardPage"))
-                        //clean the wizard and the model
-                        let firstStep = this._wizard.getSteps()[0];
-                        this._wizard.discardProgress(firstStep);
-                        this._wizard.goToStep(firstStep);
-                        firstStep.setValidated(false);
-                        this._model.setData({
-                            _NumFiles: 0,
-                            EmployeeID: "",
-                            Files: []
-                        });
+                        this._navContainer.backToPage(this.byId("wizardPage"));
+                        this.clearUI();
 
-                        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                         oRouter.navTo("RouteApp",{});
                     };
                 }.bind(this)
@@ -62,6 +51,9 @@ sap.ui.define([
             let buttonPressedId = this.getView().getLocalId(buttonPressed.getId());
             let slider = this.byId("salarySlider");
 
+            //Clean model for the cases the button pressed change
+            this._model.setData(null);
+
             switch(buttonPressedId){
                 case "internBtn":
                     salary = 24000;
@@ -69,6 +61,9 @@ sap.ui.define([
                     slider.setMin(12000);
                     slider.setMax(80000);
                     slider.setStep(1000);
+
+                    this.byId("autonomousBtn").setPressed(false);
+                    this.byId("managerBtn").setPressed(false);
                     break;
 
                 case "autonomousBtn":
@@ -77,6 +72,9 @@ sap.ui.define([
                     slider.setMin(100);
                     slider.setMax(2000);
                     slider.setStep(100);
+
+                    this.byId("internBtn").setPressed(false);
+                    this.byId("managerBtn").setPressed(false);
                     break;
 
                 case "managerBtn":
@@ -85,6 +83,9 @@ sap.ui.define([
                     slider.setMin(50000);
                     slider.setMax(200000);
                     slider.setStep(1000);
+
+                    this.byId("autonomousBtn").setPressed(false);
+                    this.byId("internBtn").setPressed(false);
                     break;
 
                 default:
@@ -105,10 +106,9 @@ sap.ui.define([
             };
         };
 
-        function validateData(){
+        function validateData(oEvent){
             let employeeData = this._model.getData();
             let error = false;
-            let nextBtn = this.byId("nextStepBtn");
 
             if (!employeeData._Name) {
                 error = true;
@@ -127,8 +127,12 @@ sap.ui.define([
             if (!employeeData._DNICIF) { 
                 error = true;
                 employeeData._DNICIFState = "Error";
-            } else { 
-                employeeData._DNICIFState = "None";
+            } else {
+                if (employeeData._Type !== "1") {
+                    error = this.validateDNI();
+                } else {
+                    employeeData._DNICIFState = "None";
+                };                 
             };
 
             if (!employeeData._IncorporationDate) {
@@ -140,18 +144,18 @@ sap.ui.define([
 
             if (error) {
                 this._wizard.invalidateStep(this.byId("stepDataEmployee"));
-                nextBtn.setVisible(false);  
-                nextBtn.setEnabled(false);              
+                this._wizard.invalidateStep(this.byId("stepAdditionalInfoEmployee"));            
             } else {
                 this._wizard.validateStep(this.byId("stepDataEmployee"));
-                nextBtn.setVisible(true);  
-                nextBtn.setEnabled(true);  
+                this._wizard.validateStep(this.byId("stepAdditionalInfoEmployee"));  
             };
         };
 
-        function validateDNI (oEvent) {
+        function validateDNI () {
+            let error = false;
+
             if (this._model.getData()._Type !== "1") {
-                let employeeDNI = oEvent.getParameter("value");
+                let employeeDNI = this._model.getData()._DNICIF;
                 let number, letter, letterList;
                 let regularExp = /^\d{8}[a-zA-Z]$/;
 
@@ -164,62 +168,51 @@ sap.ui.define([
 
                     if (letterList !== letter.toUpperCase()) {
                         this._model.setProperty("/_DNICIFState","Error");
+                        error = true;
                     } else {
                         this._model.setProperty("/_DNICIFState","None");
                     };
 
                 }else{
                     this._model.setProperty("/_DNICIFState","Error");
+                    error = true;
                 };
             }
-        };
 
-        function onGoToStepThree(oEvent){
-            let stepTwo = this.byId("stepDataEmployee");
-            let stepThree = this.byId("stepAdditionalInfoEmployee");
-
-            if(this._wizard.getCurrentStep() === stepTwo.getId()){
-                this._wizard.nextStep();
-            }else{
-                this._wizard.goToStep(stepThree);
-            };
-        };
-
-        function onSaveEmployee () {
-
-        };
+            return error;
+        };      
 
         function onCompleteWizard () {
-            this.byId("navContainerCreateEmployee").to(this.byId("reviewDataPage"));
+            this._navContainer.to(this.byId("reviewDataPage"));
             let uploadSet = this.byId("uploadSet");
-            let files = uploadSet.getItems();
-			let numFiles = uploadSet.getItems().length;
-            let filesArray;
+            let files = uploadSet.getIncompleteItems();
+			let numFiles = files.length;
+            let filesArray = [];
 
             this._model.setProperty("/_NumFiles", numFiles);
 
             if (numFiles > 0) {
-                for(let i in files){
+                for (let i in files) {
                     filesArray.push({
-                        DocName: files[i].getFileName(),
-                        MimeType: files[i].getMimeType()
+                        fileName: files[i].getFileName(),
+                        mediaType: files[i].getMediaType()
                     });	
                 };
 
-                this._model.setProperty("/_files", filesArray);
+                this._model.setProperty("/_Files", filesArray);
             } else {
                 this._model.setProperty("/_Files", []);
             };
         };
 
         function onBeforeUploadStart (oEvent) {
-            let oUploadSet = oEvent.getSource();
+            let uploadSet = oEvent.getSource();
             let fileName = oEvent.getParameter("item").getFileName();
 
             //SLUG
             let oCustomerHeaderSlug = new sap.ui.core.Item({
                 key: "Slug",
-                text: this.getOwnerComponent().SapId + ";" + this._model.getData().EmployeeID + ";" + fileName
+                text: this.getOwnerComponent().SapId + ";" + this._model.getData()._EmployeeID + ";" + fileName
             });
 
             //CSRF token
@@ -228,22 +221,138 @@ sap.ui.define([
                 text: this.getView().getModel("odataModel").getSecurityToken()
             });
 
-            oUploadSet.addHeaderField(oCustomerHeaderToken); 
-            oUploadSet.addHeaderField(oCustomerHeaderSlug);     
+            uploadSet.addHeaderField(oCustomerHeaderToken); 
+            uploadSet.addHeaderField(oCustomerHeaderSlug);     
+        };
+
+        function editStep (step) {            
+            let onAfterNavigate = function () {
+				this._wizard.goToStep(this._wizard.getSteps()[step]);
+                //unassing the function after execute it
+				this._navContainer.detachAfterNavigate(onAfterNavigate);
+			}.bind(this);
+
+            //assign a function after navigate
+			this._navContainer.attachAfterNavigate(onAfterNavigate);
+			//return to wizard page in case to cancel in review page
+            this._navContainer.backToPage(this.byId("wizardPage"));
+        };
+
+        function editStepOne (oEvent) {
+            this.editStep(0);
+        };
+
+        function editStepTwo (oEvent) {
+            this.editStep(1);
+        };
+
+        function editStepThree (oEvent) {
+            this.editStep(2);
+        };
+
+        function onSaveEmployee () {
+            let dataModel = this._model.getData();            
+            let body = {
+                Type: dataModel._Type,
+                SapId: this.getOwnerComponent().SapId,
+                FirstName: dataModel._Name,
+                LastName: dataModel._LastName,
+                Dni: dataModel._DNICIF,
+                CreationDate: dataModel._IncorporationDate,
+                Comments: dataModel._Comments,
+                UserToSalary: [{
+                    Amount : parseFloat(dataModel._Salary).toString(),
+                    Comments : dataModel._Comments,
+                    Waers : "EUR"
+                }]
+            };
+
+            this.getView().setBusy(true);
+            this.getView().getModel("odataModel").create("/Users",body,{
+                success : function (data) {
+                    this.getView().setBusy(false);
+                    //Store the id of the employee created in the model
+                    this._model.setProperty("/_EmployeeID",data.EmployeeId);                    
+                    //Load files in server
+                    this.uploadFiles();
+                }.bind(this),
+                error : function () {
+                    this.getView().setBusy(false);
+                }.bind(this)
+            });
+        };
+
+        function uploadFiles () {
+            let uploadSet = this.byId("uploadSet");
+            let incompleteItems = uploadSet.getIncompleteItems();
+            let items = incompleteItems.length;
+            //Counter to manage when all files are uploaded
+            this._model.setProperty("/_Counter",0);
+
+            if (items !== 0) {
+                uploadSet.setBusy(true);
+                for (let i = 0; i < items; i++) {                    
+                    uploadSet.uploadItem(incompleteItems[i]);
+                    uploadSet.removeAllHeaderFields();
+                };
+            };
+        };
+
+        function onUploadCompleted () {
+            let dataModel = this._model.getData();
+            let oResourceBundle = this.getView().getModel("i18n").getResourceBundle();            
+            dataModel._Counter += 1;
+            
+            if (dataModel._Counter === dataModel._NumFiles) {                
+                this.byId("uploadSet").setBusy(false);
+                MessageBox.information(oResourceBundle.getText("createdEmployee") + ": " + dataModel._EmployeeID,{
+                    onClose : function(){  
+                        this._navContainer.backToPage(this.byId("wizardPage"));                     
+                        this.clearUI();    
+
+                        let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        oRouter.navTo("RouteApp",{});
+                    }.bind(this)
+                });                
+            };
+        };
+
+        function clearUI () {            
+            //clean the wizard
+            let firstStep = this._wizard.getSteps()[0];
+            let secondStep = this._wizard.getSteps()[1];
+            let thirdStep = this._wizard.getSteps()[2];
+            this._wizard.discardProgress(firstStep);
+            this._wizard.goToStep(firstStep);
+            firstStep.setValidated(false);
+            secondStep.setValidated(false);
+            thirdStep.setValidated(false);
+
+            //clear the model
+            this._model.setData(null);
+            
+            //Clear the UploadSet
+            this.byId("uploadSet").removeAllIncompleteItems();
+            this.byId("uploadSet").removeAllItems();
         };
 
         let CreateEmployee = Controller.extend("rrhh.controller.CreateEmployee", {});
 
         CreateEmployee.prototype.onBeforeRendering = onBeforeRendering;
-        CreateEmployee.prototype.onInit = onInit;
         CreateEmployee.prototype.onCancelCreateEmployee = onCancelCreateEmployee;
         CreateEmployee.prototype.onGoToStepTwo = onGoToStepTwo;
         CreateEmployee.prototype.validateData = validateData;
-        CreateEmployee.prototype.validateDNI = validateDNI;
-        CreateEmployee.prototype.onGoToStepThree = onGoToStepThree;
-        CreateEmployee.prototype.onSaveEmployee = onSaveEmployee;
+        CreateEmployee.prototype.validateDNI = validateDNI;        
         CreateEmployee.prototype.onCompleteWizard = onCompleteWizard;
         CreateEmployee.prototype.onBeforeUploadStart = onBeforeUploadStart;
+        CreateEmployee.prototype.editStep = editStep;
+        CreateEmployee.prototype.editStepOne = editStepOne;
+        CreateEmployee.prototype.editStepTwo = editStepTwo;
+        CreateEmployee.prototype.editStepThree = editStepThree;
+        CreateEmployee.prototype.onSaveEmployee = onSaveEmployee;
+        CreateEmployee.prototype.uploadFiles = uploadFiles;
+        CreateEmployee.prototype.onUploadCompleted = onUploadCompleted;
+        CreateEmployee.prototype.clearUI = clearUI;
 
         return CreateEmployee;        
     });

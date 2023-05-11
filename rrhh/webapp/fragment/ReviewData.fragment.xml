@@ -77,7 +77,7 @@
                       items="{/_Files}">
                     <items>
                         <StandardListItem id="listItemReview"
-                                          title="{DocName}"/>
+                                          title="{fileName}"/>
                     </items>
                 </List>
                 <Button id="btnEditStepThreeReview"
