@@ -1,0 +1,85 @@
+<core:FragmentDefinition xmlns:core ="sap.ui.core"
+                         xmlns="sap.m"
+                         xmlns:upload="sap.m.upload"
+                         xmlns:suite="sap.suite.ui.commons">
+    <ObjectHeader id="headerEmployeeDetail"
+                  icon= "{= ${odataModel>Type}==='0' ? 'sap-icon://employee-pane' : ${odataModel>Type}==='1' ? 'sap-icon://employee' : 'sap-icon://leads' }"
+                  title="{odataModel>FirstName} {odataModel>LastName}"
+                  intro="{odataModel>Dni}"
+                  class="sapUiResponsivePadding--header"
+                  responsive="true">
+            <ObjectAttribute id="employeeDateHeader"
+                             title="{i18n>dateEmployee}" 
+                             text="{ path:'odataModel>CreationDate', type:'sap.ui.model.type.Date'}" />
+            <ObjectAttribute id="employeeTypeHeader"
+                             title="{i18n>type}" 
+                             text="{= ${odataModel>Type} === '0' ? ${i18n>internBtn} : ${odataModel>Type} === '1' ? ${i18n>autonomousBtn} : ${i18n>managerBtn}}" />
+            <ObjectAttribute id="employeeCommentsHeader"
+                             title="{i18n>comments}" 
+                             text="{odataModel>Comments}" />
+    </ObjectHeader>
+    <IconTabBar id="tabBar"
+                class="sapUiResponsiveContentPadding">
+        <items>
+            <IconTabFilter id="filesTab"							           
+                           icon="sap-icon://attachment"
+                           design="Horizontal"
+                           text="{i18n>files}">
+                <upload:UploadSet id="uploadSet"
+                                  maxFileNameLength="55"
+                                  maxFileSize="10"
+                                  multiple="false"
+                                  sameFilenameAllowed="true"
+                                  instantUpload="true"
+                                  uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
+                                  items="{odataModel>UserToAttachment}"
+                                  uploadCompleted="onUploadComplete"
+                                  beforeUploadStarts="onBeforeUploadStart"
+                                  noDataDescription="{i18n>dragFiles}"
+                                  mode="SingleSelect">
+                    <upload:toolbar>
+                        <OverflowToolbar id="overFlowToolbarUploadSet">
+                            <ToolbarSpacer id="toolbarSpacerUploadSet"/>
+                            <Button id="downloadSelectedButton"
+                                    text="{i18n>downloadSelected}"
+                                    press="onDownloadFile"/>
+                            <upload:UploadSetToolbarPlaceholder id="toolbarPlaceholderUploadSet"/>
+                        </OverflowToolbar>
+                    </upload:toolbar>
+                    <upload:items>
+                        <upload:UploadSetItem id="fileUploadSet"
+                                              visibleEdit="false"
+                                              fileName="{odataModel>DocName}"
+                                              openPressed="onDownloadFile"
+                                              removePressed="onDeleteFile">
+                        </upload:UploadSetItem>
+                    </upload:items>
+                </upload:UploadSet>
+            </IconTabFilter>
+            <IconTabFilter id="historicTab"
+                           icon="sap-icon://money-bills"
+                           design="Horizontal"
+                           text="{i18n>historic}">
+                <suite:Timeline id="historicTimeline"
+                                enableDoubleSided="true"
+                                groupByType="Year"
+                                enableScroll="false"
+                                groupBy="CreationDate"
+                                showHeaderBar="false"
+                                height="100%"
+                                sortOldestFirst="true"
+                                content="{odataModel>UserToSalary}">
+                    <suite:content>
+                        <suite:TimelineItem id="historicTimelineItem"
+                                            dateTime="{odataModel>CreationDate}"
+                                            text="{odataModel>Comments}"    
+                                            userName="{parts:[{path:'odataModel>Amount'},{path:'odataModel>Waers'}],
+                                                    type: 'sap.ui.model.type.Currency',
+                                                    formatOptions: {showMeasure: false}}"										                										                
+                                            icon="sap-icon://circle-task"/>
+                    </suite:content>
+                </suite:Timeline>
+            </IconTabFilter>
+        </items>
+    </IconTabBar>
+</core:FragmentDefinition>                          

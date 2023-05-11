@@ -1,0 +1,59 @@
+<core:FragmentDefinition xmlns:core ="sap.ui.core"
+                         xmlns="sap.m"
+                         xmlns:form="sap.ui.layout.form">
+    <Dialog id="promoteDialog"
+            title="{i18n>newPromotion}">
+		<content>
+			<form:Form id="dialogForm">
+                <form:layout>
+                    <form:ResponsiveGridLayout id="dialogGrid"
+                                               labelSpanXL="5"
+                                               labelSpanL="5"
+                                               labelSpanM="5"
+                                               labelSpanS="12"
+                                               adjustLabelSpan="true"                                            
+                                               singleContainerFullSize="true"/>
+                </form:layout>
+                <form:formContainers>
+                    <form:FormContainer id="formContainerDialog">
+                        <form:formElements>
+                            <form:FormElement id="formSalaryDialog"
+                                              label="{i18n>salary}">
+                                <form:fields>
+                                    <Input id="inputSalaryDialog"
+                                           value="{promotionDialog>/Amount}"
+                                           valueState="{promotionDialog>/AmountState}"
+                                           change="validateData"/>
+                                </form:fields>
+                            </form:FormElement>
+                            <form:FormElement id="formDateDialog"
+                                              label="{i18n>date}">
+                                <form:fields>
+                                    <DatePicker id="datePickerDialog"
+                                                dateValue="{promotionDialog>/CreationDate}"
+                                                valueState="{promotionDialog>/CreationDateState}"
+                                                change="validateData"/>
+                                </form:fields>
+                            </form:FormElement>
+                            <form:FormElement id="formComentDialog"
+                                              label="{i18n>comments}">
+                                <form:fields>
+                                    <TextArea id="commentDialog"
+                                              value="{promotionDialog>/Comments}"/>
+                                </form:fields>
+                            </form:FormElement>
+                        </form:formElements>
+                    </form:FormContainer>
+                </form:formContainers>
+			</form:Form>
+		</content>
+		<buttons>
+			<Button id="promoteBtn"
+                    text="{i18n>accept}" 
+                    press="onPromoteEmployee"/>
+			<Button id="cancelBtn"
+                    text="{i18n>cancel}" 
+                    press="onClosePromoteDialog"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>  

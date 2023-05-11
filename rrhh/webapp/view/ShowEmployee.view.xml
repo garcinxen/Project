@@ -1,6 +1,66 @@
 <mvc:View controllerName="rrhh.controller.ShowEmployee"
           xmlns:mvc="sap.ui.core.mvc" 
           displayBlock="true"
-          xmlns="sap.m">
-
+          xmlns="sap.m"
+          xmlns:core="sap.ui.core">
+    <SplitApp id="splitViewEmployees">
+		<masterPages>
+			<Page id="employeeListPage" 
+                  showHeader="false">
+                <content>
+                    <Toolbar id="searchToolbar"
+                            class="sapUiTinyMarginTop">
+                        <Button id="btnBack"
+                                icon="sap-icon://nav-back" 
+                                press="onBack"></Button>
+                        <SearchField id="searchEmployee"
+                                    liveChange="onSearchEmployee" 
+                                    width="100%" />
+                    </Toolbar>                
+                    <List id="employeesList"
+                          itemPress="onClickEmployee" 
+                          items="{path:'odataModel>/Users',filters:[{path:'SapId',operator:'EQ',value1:'anguila3000@hotmail.com'}]}">
+                        <items>
+                            <StandardListItem id="employeeItem"
+                                              title="{odataModel>FirstName} {odataModel>LastName}" 
+                                              description="{odataModel>Dni}" 
+                                              type="Active"/>
+                        </items>
+                    </List>
+                </content>
+			</Page>
+		</masterPages>
+		<detailPages>
+			<Page id="emptyEmployeeDetailPage" 
+                  showHeader="false">
+                <content>
+                    <FlexBox id="selectEmployeeContainer"
+                            alignItems="Center" 
+                            justifyContent="Center" 
+                            height="100%">
+                        <Text id="selectEmployeeText" 
+                            text="{i18n>selectEmployee}"/>
+                    </FlexBox>
+                </content>
+			</Page>
+			<Page id="employeeDetailPage"
+				  title="{i18n>employeeDetail}">
+                <content>
+                    <core:Fragment fragmentName="rrhh.fragment.EmployeeDetails" 
+                                   type="XML"/>
+                </content>
+				<footer>
+					<Toolbar id="footerToolbar">
+						<ToolbarSpacer id="footerToolbarSpacer"></ToolbarSpacer>
+						<Button id="deleteBtn"
+                                text="{i18n>fire}" 
+                                press="onFireEmployee"/>
+						<Button id="promoteDialogBtn"
+                                text="{i18n>promote}" 
+                                press="onShowPromoteDialog"/>
+					</Toolbar>
+				</footer>
+			</Page>
+		</detailPages>
+	</SplitApp>
 </mvc:View>          

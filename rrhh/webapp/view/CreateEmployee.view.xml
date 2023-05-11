@@ -80,6 +80,7 @@
                                                                        width="100%"                                
                                                                        class="sapUiSmallMarginBottom"
                                                                        enableTickmarks="true"
+                                                                       showAdvancedTooltip="true"
                                                                        change="validateData"/>
                                                                <Label id="labelDateEmployee"
                                                                       text="{i18n>dateEmployee}"/>

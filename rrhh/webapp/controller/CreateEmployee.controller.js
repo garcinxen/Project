@@ -250,7 +250,7 @@ sap.ui.define([
             this.editStep(2);
         };
 
-        function onSaveEmployee () {
+        function onSaveEmployee () {            
             let dataModel = this._model.getData();            
             let body = {
                 Type: dataModel._Type,
@@ -269,12 +269,9 @@ sap.ui.define([
 
             this.getView().setBusy(true);
             this.getView().getModel("odataModel").create("/Users",body,{
-                success : function (data) {
-                    this.getView().setBusy(false);
+                success : function (data) {                    
                     //Store the id of the employee created in the model
-                    this._model.setProperty("/_EmployeeID",data.EmployeeId);                    
-                    //Load files in server
-                    this.uploadFiles();
+                    this.getNewEmployeeID();                                      
                 }.bind(this),
                 error : function () {
                     this.getView().setBusy(false);
@@ -295,25 +292,20 @@ sap.ui.define([
                     uploadSet.uploadItem(incompleteItems[i]);
                     uploadSet.removeAllHeaderFields();
                 };
+            } else {
+                this.getView().setBusy(false);
+                this.showMessageEmployeeCreated();                
             };
         };
 
         function onUploadCompleted () {
-            let dataModel = this._model.getData();
-            let oResourceBundle = this.getView().getModel("i18n").getResourceBundle();            
+            let dataModel = this._model.getData();                       
             dataModel._Counter += 1;
             
             if (dataModel._Counter === dataModel._NumFiles) {                
-                this.byId("uploadSet").setBusy(false);
-                MessageBox.information(oResourceBundle.getText("createdEmployee") + ": " + dataModel._EmployeeID,{
-                    onClose : function(){  
-                        this._navContainer.backToPage(this.byId("wizardPage"));                     
-                        this.clearUI();    
-
-                        let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                        oRouter.navTo("RouteApp",{});
-                    }.bind(this)
-                });                
+                this.byId("uploadSet").setBusy(false);  
+                this.getView().setBusy(false);
+                this.showMessageEmployeeCreated();                              
             };
         };
 
@@ -336,6 +328,43 @@ sap.ui.define([
             this.byId("uploadSet").removeAllItems();
         };
 
+        function getNewEmployeeID () {    
+            this.getView().getModel("odataModel").read("/Users",{
+                filters: [
+                    new sap.ui.model.Filter("SapId", "EQ", this.getOwnerComponent().SapId)
+                ],
+                success : function (data) {
+                    let usersLength = data.results.length;
+                    let employeeId = data.results[usersLength - 1].EmployeeId;
+
+                    this._model.setProperty("/_EmployeeID",employeeId);
+
+                    //Load files in server
+                    this.uploadFiles();                  
+                    
+                }.bind(this),
+                error : function () {
+                    this._model.setProperty("/_EmployeeID",0);
+                    this.getView().setBusy(false);
+                }.bind(this)
+            });
+        };
+
+        function showMessageEmployeeCreated () { 
+            let dataModel = this._model.getData();
+            let oResourceBundle = this.getView().getModel("i18n").getResourceBundle(); 
+
+            MessageBox.information(oResourceBundle.getText("createdEmployee") + ": " + dataModel._EmployeeID,{
+                onClose : function(){  
+                    this._navContainer.backToPage(this.byId("wizardPage"));                     
+                    this.clearUI();    
+
+                    let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                    oRouter.navTo("RouteApp",{});
+                }.bind(this)
+            });
+        };
+
         let CreateEmployee = Controller.extend("rrhh.controller.CreateEmployee", {});
 
         CreateEmployee.prototype.onBeforeRendering = onBeforeRendering;
@@ -353,6 +382,8 @@ sap.ui.define([
         CreateEmployee.prototype.uploadFiles = uploadFiles;
         CreateEmployee.prototype.onUploadCompleted = onUploadCompleted;
         CreateEmployee.prototype.clearUI = clearUI;
+        CreateEmployee.prototype.getNewEmployeeID = getNewEmployeeID;
+        CreateEmployee.prototype.showMessageEmployeeCreated = showMessageEmployeeCreated;
 
         return CreateEmployee;        
     });
