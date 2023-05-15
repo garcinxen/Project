@@ -34,7 +34,7 @@
                             <GenericTile id="tileSignOrder"  
                                          headerImage="sap-icon://signature" 
                                          class="sapUiTinyMarginBegin sapUiTinyMarginTop" 
-                                         url="https://a1b9674atrial-dev-employees-approuter.cfapps.us10-001.hana.ondemand.com/index.html">
+                                         url="https://a3b6dc41trial-dev-employees-approuter.cfapps.us10-001.hana.ondemand.com">
                                 <TileContent id="contentTileSignOrder"
                                              footer="{i18n>signOrder}">
                                 </TileContent>

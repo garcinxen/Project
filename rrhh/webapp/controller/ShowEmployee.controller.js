@@ -23,14 +23,15 @@ sap.ui.define([
 
         function onBack () {
             this._splitViewEmployees.to(this.byId("emptyEmployeeDetailPage"));
+            this._splitViewEmployees.to(this.byId("employeeListPage"));            
 
             let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.navTo("RouteApp",{});
         };
 
-        function cleanUI () {
-
-        };
+        function onShowMaster () {
+            this._splitViewEmployees.to(this.byId("employeeListPage"));
+        };        
 
         function onSearchEmployee (oEvent) { 
             let filter = [];           
@@ -168,7 +169,7 @@ sap.ui.define([
             } else {
                 aItems.forEach((oItem)=>{
                     let sPath = oItem.getBindingContext("odataModel").getPath();
-                    window.open("/sap/opu/odata/sap/ZEMPLOYEES_SRV" + sPath + "/$value");
+                    window.open("/rrhh/sap/opu/odata/sap/ZEMPLOYEES_SRV" + sPath + "/$value");
                 });
             };
         };
@@ -217,7 +218,7 @@ sap.ui.define([
 
         ShowEmployee.prototype.onBeforeRendering = onBeforeRendering;
         ShowEmployee.prototype.onBack = onBack;
-        ShowEmployee.prototype.cleanUI = cleanUI;
+        ShowEmployee.prototype.onShowMaster = onShowMaster;
         ShowEmployee.prototype.onSearchEmployee = onSearchEmployee;
         ShowEmployee.prototype.onClickEmployee = onClickEmployee;
         ShowEmployee.prototype.onFireEmployee = onFireEmployee;

@@ -3,7 +3,9 @@
           displayBlock="true"
           xmlns="sap.m"
           xmlns:core="sap.ui.core">
-    <SplitApp id="splitViewEmployees">
+    <SplitApp id="splitViewEmployees"
+              initialDetail="emptyEmployeeDetailPage"
+              initialMaster="employeeListPage">
 		<masterPages>
 			<Page id="employeeListPage" 
                   showHeader="false">
@@ -12,7 +14,7 @@
                             class="sapUiTinyMarginTop">
                         <Button id="btnBack"
                                 icon="sap-icon://nav-back" 
-                                press="onBack"></Button>
+                                press="onBack"/>
                         <SearchField id="searchEmployee"
                                     liveChange="onSearchEmployee" 
                                     width="100%" />
@@ -32,7 +34,8 @@
 		</masterPages>
 		<detailPages>
 			<Page id="emptyEmployeeDetailPage" 
-                  showHeader="false">
+                  showNavButton="true"
+                  navButtonPress="onShowMaster">
                 <content>
                     <FlexBox id="selectEmployeeContainer"
                             alignItems="Center" 
@@ -44,8 +47,10 @@
                 </content>
 			</Page>
 			<Page id="employeeDetailPage"
-				  title="{i18n>employeeDetail}">
-                <content>
+				  title="{i18n>employeeDetail}"
+                  showNavButton="true"
+                  navButtonPress="onShowMaster">
+                <content>                    
                     <core:Fragment fragmentName="rrhh.fragment.EmployeeDetails" 
                                    type="XML"/>
                 </content>

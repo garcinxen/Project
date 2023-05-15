@@ -107,7 +107,7 @@
                                                                           maxFileNameLength="55"
                                                                           maxFileSize="10"
                                                                           multiple="true"
-                                                                          uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
+                                                                          uploadUrl="/rrhh/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
                                                                           sameFilenameAllowed="true"
                                                                           instantUpload="false"
                                                                           beforeUploadStarts="onBeforeUploadStart"

@@ -31,7 +31,7 @@
                                   multiple="false"
                                   sameFilenameAllowed="true"
                                   instantUpload="true"
-                                  uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
+                                  uploadUrl="/rrhh/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
                                   items="{odataModel>UserToAttachment}"
                                   uploadCompleted="onUploadComplete"
                                   beforeUploadStarts="onBeforeUploadStart"

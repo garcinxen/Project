@@ -320,6 +320,11 @@ sap.ui.define([
             secondStep.setValidated(false);
             thirdStep.setValidated(false);
 
+            //clear buttons state
+            this.byId("internBtn").setPressed(false);
+            this.byId("autonomousBtn").setPressed(false);
+            this.byId("managerBtn").setPressed(false);
+
             //clear the model
             this._model.setData(null);
             
